@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsplash</title>
+    
+</head>
+<body>
+
+    <style>
+        .imgSelect {
+            /* border-color: blue;
+            border-width: thick solid; */
+            border: #7bf7f1 4px solid;
+        }
+    </style>
+
+    <h1>Search and Download Unsplash Images</h1>
+
+    <form method="POST" action="/download">
+        {{form.search_query.label}}
+        {{form.search_query}}
+        <input type="submit" value="Search Image">
+    </form>
+
+    <br>
+
+    <form id="download_Form" name="download_form">
+        <input type="hidden" name="image_name" value={{image_name}}>
+        <input type="submit" value="Download">
+    </form>
+    <br>
+
+    {% for key in urls_thumbnail_download %}
+        <!-- <p><b>URL ThumbNail:</b> {{key}}</p>
+        <p><b>URL Download</b>: {{urls_thumbnail_download[key]}}</p>
+        <p><b>Image Name:</b> {{image_name}} </p> -->
+
+        <div>
+            <img src={{key}} onclick="imageSelected(this)" alt="" id="{{urls_thumbnail_download[key]}}">
+        </div>
+        
+        <!-- action="/download" target="_black" method="POST"  -->
+        
+        <br>
+    {% endfor %}
+
+    <script type="text/javascript">
+        
+        img_URLs = []
+
+        function imageSelected(imageElement) {
+
+            //ctrl was held down during the click
+            if (window.event.ctrlKey) {
+                // imageElement.style.borderWidth = "thick solid #6694ff";
+                // imageElement.style.borderColor = '#6694ff'
+
+                // console.log('Ctrl Click Detected');
+                // console.log(imageElement);
+
+                if (imageElement.classList.contains('imgSelect')) {
+                    // Image Unselected
+                    imageElement.classList.remove('imgSelect');
+                    let index = img_URLs.indexOf(imageElement.getAttribute('id'));
+                    img_URLs.splice(index, 1);
+
+                } else {
+                    // Image Selected
+                    imageElement.classList.add("imgSelect");
+                    img_URLs.push(imageElement.getAttribute('id'))
+                }
+
+                console.log(img_URLs);
+
+
+            }
+            // console.log('Click Detected')
+        }
+
+        // alert("JS Working");
+        const download_button = document.getElementById('download_Form');
+        // console.log(download_forms);
+    
+        download_button.addEventListener('submit', (event)=> {
+            event.preventDefault();
+            // console.log('Download Button Pressed')
+            // const formData = new FormData(download_form);
+            // console.log(formData);
+            // let downloadURL = form.elements['downloadURL'].value;
+            let imageName = download_button.elements['image_name'].value;
+            // console.log('Download URL: ' + downloadURL);
+            // console.log('Image Name: ' + imageName);
+            data = [img_URLs, imageName]
+            console.log(data)
+
+            fetch('/download/img', {
+                method: 'POST',
+                body: data,
+            }).then(function(response) {
+                console.log('Image Downloaded')
+                alert('Image Download Completed');
+            })
+        })
+        
+        
+
+        // download_form.addEventListener('submit', (event)=> {
+        //     event.preventDefault();
+        //     console.log('Download Button Pressed')
+        //     const formData = new FormData(download_form);
+        //     // console.log(formData);
+        //     let downloadURL = download_form.elements['downloadURL'].value;
+        //     let imageName = download_form.elements['image_name'].value;
+        //     // console.log('Download URL: ' + downloadURL);
+        //     // console.log('Image Name: ' + imageName);
+        //     data = [downloadURL, imageName]
+        //     console.log(data)
+
+        //     // fetch('/download', {
+        //     //     method: 'POST',
+        //     //     body: formData,
+        //     // }).then(function(response) {
+        //     //     console.log('Data Sent')
+        //     // })
+        // })
+
+    </script>
+   
+</body>
+</html>
